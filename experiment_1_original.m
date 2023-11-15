@@ -38,16 +38,16 @@ C = cal_C_1_dim(phi_list, g_list, x_lb, x_ub);
 A = C * As / C;
 
 %% Predict
-x_init = 0.5;
-total_lengh = 100;
-g_list_predict = zeros(n_obs, total_lengh);
-x_est_list = zeros(total_lengh, 1);
+x_init = 0.0;
+total_length = 100;
+g_list_predict = zeros(n_obs, total_length);
+x_est_list = zeros(total_length, 1);
 
 g_list_predict(:, 1) = double(subs(g_list, x, x_init));
-for t = 2:total_lengh
+for t = 2:total_length
     g_list_predict(:, t) = A * g_list_predict(:, t-1);
 end
-for t = 1:total_lengh
+for t = 1:total_length
     g3 = real(g_list_predict(3, t));
     g2 = real(g_list_predict(2, t));
     x_est_list(t) = atan2(g3, g2) / (2 * pi);
@@ -57,10 +57,10 @@ for t = 1:total_lengh
 end
 
 %% Ground truth
-x_gt_list = zeros(total_lengh, 1);
+x_gt_list = zeros(total_length, 1);
 x_gt_list(1) = x_init;
 
-for t = 2:total_lengh
+for t = 2:total_length
     if x_gt_list(t-1) <= x_star
         x_gt_list(t) = subs(f_list(1), x, x_gt_list(t-1));
     else
@@ -69,7 +69,8 @@ for t = 2:total_lengh
 end
 
 %% Plot
-plot(1:total_lengh, x_gt_list), hold on;
-plot(1:total_lengh, x_est_list);
+plot(1:total_length, x_gt_list, 'LineWidth', 1), hold on;
+plot(1:total_length, x_est_list, 'LineWidth', 2, 'LineStyle', '-.');
 legend("Ground Truth", "Prediction");
-axis tight;
+xlim([0, total_length]), ylim([x_lb, x_ub]);
+grid on;
