@@ -8,8 +8,8 @@ function C = cal_C_1_dim(phi_list, g_list, x_lb, x_ub)
 
 n_phi = length(phi_list);
 n_g = length(g_list);
-C = zeros(n_g, n_phi);
 
+C = zeros(n_g, n_phi);
 if phi_list(1) == 1 && g_list(1) == 1
     C(1, 1) = x_ub - x_lb;
     for i = 1:n_g
