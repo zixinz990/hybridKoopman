@@ -1,4 +1,6 @@
 close all; clear; clc;
+
+addpath("functions");
 syms k x real;
 
 %% Dynamics
