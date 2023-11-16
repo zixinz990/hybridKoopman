@@ -1,6 +1,6 @@
-close all; clear all; clc;
+close all; clear; clc;
 
-addpath("functions");
+addpath("./functions/");
 syms k v real
 
 %% Dynamics
@@ -13,7 +13,7 @@ x_ub = 0.5;
 f_range = [-0.5, 0.5];
 
 %% Observables
-n_obs = 3; % must be odd
+n_obs = 17; % must be odd
 g_list = sym(zeros(n_obs, 1));
 g_list(1) = sym(1);
 for n = 1:(n_obs - 1) / 2

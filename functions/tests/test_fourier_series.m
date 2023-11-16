@@ -3,9 +3,9 @@ close all; clear; clc;
 syms v real
 
 f = v;
-N = 20;
-l = 1;
-[a0, an, bn] = cal_fourier_series_coef(matlabFunction(f), v, 1, N);
+N = 50;
+l = 0.5;
+[a0, an, bn] = cal_fourier_series_coef(matlabFunction(f), v, l, N);
 
 fourier_series = sym(a0);
 for n = 1:10

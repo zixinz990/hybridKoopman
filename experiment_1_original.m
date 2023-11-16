@@ -43,20 +43,33 @@ A = C * As / C;
 x_init = 0.0;
 total_length = 100;
 g_list_predict = zeros(n_obs, total_length);
-x_est_list = zeros(total_length, 1);
 
 g_list_predict(:, 1) = double(subs(g_list, x, x_init));
 for t = 2:total_length
     g_list_predict(:, t) = A * g_list_predict(:, t-1);
 end
+
+%% Reconstruct state
+x_est_list = zeros(total_length, 1);
+
+% Use atan2
 for t = 1:total_length
     g3 = real(g_list_predict(3, t));
     g2 = real(g_list_predict(2, t));
-    x_est_list(t) = atan2(g3, g2) / (2 * pi);
+    x_est_list(t) = real(atan2(g3, g2) / (2 * pi));
     if x_est_list(t) < 0
         x_est_list(t) = x_est_list(t) + 1;
     end
 end
+
+% Or use fourier series
+% [a0, an, bn] = cal_fourier_series_coef(matlabFunction(x), x, 0.5, (n_obs - 1)/2); % Fourier series coefficients
+% for t = 1:total_length
+%     x_est_list(t) = a0;
+%     for n = 1:(n_obs - 1) / 2
+%         x_est_list(t) = x_est_list(t) + an(n) * g_list_predict(2*n, t) + bn(n) * g_list_predict(2*n+1, t);
+%     end
+% end
 
 %% Ground truth
 x_gt_list = zeros(total_length, 1);
