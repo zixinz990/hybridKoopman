@@ -1,19 +1,20 @@
 close all; clear; clc;
 
 addpath("./functions/");
-syms k v real
+syms k v u real
 
 %% Dynamics
 dt = 0.001;
 g = -9.81;
-f = v + g * dt;
+m = 1; % mass, kg
+f = v + (g + u / m) * dt;
 f_list = f;
 x_lb = -0.5;
 x_ub = 0.5;
 f_range = [-0.5, 0.5];
 
 %% Observables
-n_obs = 17; % must be odd
+n_obs = 3; % must be odd
 g_list = sym(zeros(n_obs, 1));
 g_list(1) = sym(1);
 for n = 1:(n_obs - 1) / 2
@@ -31,20 +32,23 @@ for n = 1:n_obs / 2
 end
 
 %% Calculate A
-As = cal_As_1_dim(phi_list, f_list, f_range);
+As = cal_As_1_dim_sym(phi_list, f_list, f_range);
 C = cal_C_1_dim(phi_list, g_list, x_lb, x_ub);
 A = C * As / C;
 
 %% Predict
 v_init = 0.0;
 total_length = 500;
+u_list = zeros(total_length, 1) + 2;
 g_list_predict = zeros(n_obs, total_length);
-v_est_list = zeros(total_length, 1);
 
 g_list_predict(:, 1) = double(subs(g_list, v, v_init));
 for t = 2:total_length
-    g_list_predict(:, t) = A * g_list_predict(:, t-1);
+    g_list_predict(:, t) = double(subs(A, u, u_list(t))) * g_list_predict(:, t-1);
 end
+
+%% Reconstruct state
+v_est_list = zeros(total_length, 1);
 for t = 1:total_length
     g3 = real(g_list_predict(3, t));
     g2 = real(g_list_predict(2, t));
@@ -57,10 +61,10 @@ end
 %% Ground truth
 v_gt_list = zeros(total_length, 1);
 v_gt_list(1) = v_init;
-for k = 2:total_length
-    v_gt_list(k) = subs(f, v, v_gt_list(k-1));
-    if v_gt_list(k) <= -0.5
-        v_gt_list(k) = 0.5;
+for t = 2:total_length
+    v_gt_list(t) = subs(f, [v; u], [v_gt_list(t-1); u_list(t)]);
+    if v_gt_list(t) <= -0.5
+        v_gt_list(t) = 0.5;
     end
 end
 
