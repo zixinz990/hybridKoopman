@@ -34,12 +34,18 @@ end
 %% Calculate A
 As = cal_As_1_dim_sym(phi_list, f_list, f_range);
 C = cal_C_1_dim(phi_list, g_list, x_lb, x_ub);
-A = C * As / C;
+% A = C * As / C;
+% A = real(C * As / C);
+A = (real(C)*real(As) - imag(C)*imag(As)) * real(inv(C)) - ...
+    (real(C)*imag(As) + imag(C)*real(As)) * imag(inv(C));
 
-%% Predict
+%% Predict with Control
 v_init = 0.0;
 total_length = 500;
-u_list = zeros(total_length, 1) + 2;
+u_list = zeros(total_length, 1);
+for k = 1:total_length
+    u_list(k) = 5 * sin(10 * pi * k * dt);
+end
 g_list_predict = zeros(n_obs, total_length);
 
 g_list_predict(:, 1) = double(subs(g_list, v, v_init));
