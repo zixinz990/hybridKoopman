@@ -41,7 +41,7 @@ dzdt = subs(dzdt, [rho, mu], [rho_, mu_]);
 
 dt = 0.001;
 x0 = [0.3; -1];
-sim_length = 1000;
+sim_length = 500;
 
 % Ground truth
 x_list = zeros(2, sim_length);

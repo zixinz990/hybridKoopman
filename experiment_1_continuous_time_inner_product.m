@@ -17,7 +17,7 @@ x_ub = 1;
 f_range = [0, x_star; x_star, 1];
 
 %% Observables
-n_obs = 33; % must be odd
+n_obs = 7; % must be odd
 g_list = sym(zeros(n_obs, 1));
 g_list(1) = sym(1);
 for n = 1:(n_obs - 1) / 2
