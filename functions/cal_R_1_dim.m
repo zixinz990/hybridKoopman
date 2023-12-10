@@ -10,8 +10,9 @@ n_g = length(g_list);
 R = zeros(n_g, n_g);
 if g_list(1) == 1
     R(1, 1) = x_ub - x_lb;
-    for i = 1:n_g
+    for i = 1:n_g        
         for j = 1:n_g
+            disp(i+","+j)
             if ~(i == 1 && j == 1)
                 fun = matlabFunction(g_list(i)*conj(g_list(j)));
                 R(i, j) = integral(fun, x_lb, x_ub);
@@ -21,6 +22,7 @@ if g_list(1) == 1
 else
     for i = 1:n_g
         for j = 1:n_g
+            disp(i+","+j)
             fun = matlabFunction(g_list(i)*conj(g_list(j)));
             R(i, j) = integral(fun, x_lb, x_ub);
         end
