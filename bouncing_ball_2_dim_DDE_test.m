@@ -1,46 +1,54 @@
-close all; clear;
-clc;
+close all; clear; clc;
+
+has_state_in_obs = true;
+file_name = "2024_0123_2230_bouncing_ball_2_dim_DDE.mat";
 
 syms h v real;
 x = [h; v];
 
-load("2024_0122_0810_bouncing_ball_2_dim_DDE.mat");
-g_list_fun = matlabFunction(g_list, 'Vars', {x});
+% load mat file
+load(file_name);
+g_list_fun = matlabFunction(g_list, 'Vars', {x}); % the input should be a col vector
 
-[H0, V0] = meshgrid(0:0.1:5, -2.5:0.1:2.5);
-x0_list = [H0(:), V0(:)]; % mesh grid to points list
+% calculate ground truth and prediction
+[H0, V0] = meshgrid(0:0.1:10, -5:0.1:5);
+x0_list = [H0(:), V0(:)]; % mesh grid to points list, n_points x 2 matrix
+
 x_next_gt_list = zeros(size(x0_list));
 x_next_pred_list = zeros(size(x0_list));
+
 for i = 1:size(x0_list, 1)
+    % initial state
     x0 = x0_list(i, :)';
     g0 = g_list_fun(x0);
-
+    
+    % ground truth
     x_next_gt = bouncing_ball_dynamics(x0, 0);
-    g_next_gt = g_list_fun(x_next_gt);
+    x_next_gt_list(i, :) = x_next_gt;
 
+    % prediction
     g_next_pred = A * g0;
-
-    [max_g_pred, max_g_idx_pred] = max(g_next_pred);
-    x_next_pred = rbf_center_list(max_g_idx_pred, :);
-
-    x_next_gt_list(i, :) = x_next_gt';
-    x_next_pred_list(i, :) = x_next_pred';    
+    if has_state_in_obs
+        x_next_pred = g_next_pred(1:2);
+    else
+        % todo
+    end
+    x_next_pred_list(i, :) = x_next_pred';
 end
 
 pred_err = x_next_pred_list - x_next_gt_list;
-h_err = abs(pred_err(:, 1));
-v_err = abs(pred_err(:, 2));
+h_err = reshape(abs(pred_err(:, 1)), size(H0));
+v_err = reshape(abs(pred_err(:, 2)), size(H0));
 
+% plot
 subplot(2, 1, 1);
-surf(H0, V0, reshape(h_err, size(H0))), axis equal;
+surf(H0, V0, h_err), axis equal, view(2);
 colorbar;
 xlabel("Height"), ylabel("Velocity");
 title("Error of Height Prediction (m)");
-view(2);
 
 subplot(2, 1, 2);
-surf(H0, V0, reshape(v_err, size(H0))), axis equal;
+surf(H0, V0, v_err), axis equal, view(2);
 colorbar;
 xlabel("Height"), ylabel("Velocity");
 title("Error of Velocity Prediction (m/s)");
-view(2);
