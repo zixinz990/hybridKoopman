@@ -26,7 +26,7 @@ state_IC = incenter(state_DT);
 dv = 0.5 * 0.1 * 0.1;
 
 % RBF observables
-eps = 10;
+eps = 2;
 [idx, rbf_center_list] = kmeans(state_points, n_obs);
 plot(rbf_center_list(:, 1), rbf_center_list(:, 2), 'o', 'Color', 'black');
 axis equal;
@@ -35,6 +35,8 @@ for k = 1:n_obs
     rbf_center = rbf_center_list(k, :);
     g_list(k) = exp(-eps^2*(x - rbf_center')'*(x - rbf_center'));
 end
+g_list = [x; g_list];
+n_obs = n_obs + 2;
 
 % estimate R
 disp("Estimate R matrix")
@@ -68,4 +70,4 @@ end
 
 % lifted dynamics
 A = Q * inv(R);
-save("2024_0122_1638_bouncing_ball_2_dim_DDE.mat", "R", "Q", "A", "rbf_center_list", "eps", "g_list");
+% save("2024_0122_1638_bouncing_ball_2_dim_DDE.mat", "R", "Q", "A", "rbf_center_list", "eps", "g_list");
