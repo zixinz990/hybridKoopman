@@ -1,10 +1,12 @@
 clear, close all;
 clc;
 
+addpath("./functions")
+
 syms h v u real
 x = [h; v];
 
-n_obs = 50;
+n_obs = 500;
 
 h_min = 0; % must be zero
 h_max = 5;
@@ -24,7 +26,7 @@ state_IC = incenter(state_DT);
 dv = 0.5 * 0.1 * 0.1;
 
 % RBF observables
-eps = 2;
+eps = 10;
 [idx, rbf_center_list] = kmeans(state_points, n_obs);
 plot(rbf_center_list(:, 1), rbf_center_list(:, 2), 'o', 'Color', 'black');
 axis equal;
@@ -66,3 +68,4 @@ end
 
 % lifted dynamics
 A = Q * inv(R);
+save("2024_0122_1638_bouncing_ball_2_dim_DDE.mat", "R", "Q", "A", "rbf_center_list", "eps", "g_list");
