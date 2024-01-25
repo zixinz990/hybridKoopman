@@ -1,4 +1,4 @@
-close all; clear; clc;
+close all; clear;
 
 has_state_in_obs = true;
 file_name = "2024_0123_2230_bouncing_ball_2_dim_DDE.mat";
@@ -11,7 +11,7 @@ load(file_name);
 g_list_fun = matlabFunction(g_list, 'Vars', {x}); % the input should be a col vector
 
 % calculate ground truth and prediction
-[H0, V0] = meshgrid(0:0.1:10, -5:0.1:5);
+[H0, V0] = meshgrid(0:0.1:5, -2.5:0.1:2.5);
 x0_list = [H0(:), V0(:)]; % mesh grid to points list, n_points x 2 matrix
 
 x_next_gt_list = zeros(size(x0_list));
@@ -39,6 +39,9 @@ end
 pred_err = x_next_pred_list - x_next_gt_list;
 h_err = reshape(abs(pred_err(:, 1)), size(H0));
 v_err = reshape(abs(pred_err(:, 2)), size(H0));
+fprintf("n_obs: %d, eps: %d\n", size(g_list, 1), eps);
+fprintf("Average h_err: %d. Min h_err: %d. Max h_err: %d\n", mean(h_err(:)), min(h_err(:)), max(h_err(:)))
+fprintf("Average v_err: %d. Min v_err: %d. Max v_err: %d\n\n", mean(v_err(:)), min(v_err(:)), max(v_err(:)))
 
 % plot
 subplot(2, 1, 1);
