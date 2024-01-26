@@ -1,12 +1,8 @@
 clear;
-cal_DDE(500, 1.75);
+cal_DDE(750, 2.5);
 clear;
-cal_DDE(500, 2.25);
+cal_DDE(750, 3);
 clear;
-cal_DDE(500, 2.75);
+cal_DDE(750, 2.5);
 clear;
-cal_DDE(500, 3);
-clear;
-cal_DDE(500, 3.25);
-clear;
-cal_DDE(500, 3.5);
+quit;
