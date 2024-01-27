@@ -1,27 +1,25 @@
 function cal_DDE(n_obs_1, n_obs_2, eps_1, eps_2)
-% n_obs_1 = 300, n_obs_2 = 50, eps_1 = 2, eps_2 = 18.5 may be a good choice
-addpath("./functions")
-syms h v u real
+syms h v real
 x = [h; v];
 
 n_obs = n_obs_1 + n_obs_2;
 g = -9.81;
 h_min = 0; % must be zero
-h_max = 1;
-v0_max = 1;
-v_max = sqrt(-2*g*h_max+v0_max^2);
+h0_max = 1;
+v0_max = 2;
+v_max = sqrt(-2*g*h0_max+v0_max^2);
 v_min = -v_max;
-v_jump = -4.3;
-h_jump = 0.05;
+h_max = h0_max - 0.5 * v0_max^2 / g;
+h_jump = 0.1; % approximated mode 2 bound
 
 % sample
-[H1, V1] = meshgrid(h_min:0.05:h_jump, v_jump:0.05:v_max);
-[H2, V2] = meshgrid(h_min:0.01:h_jump, v_min:0.01:v_jump); % approximated mode 2 reagion
-[H3, V3] = meshgrid(h_jump:0.05:h_max, v_min:0.05:v_max+0.1);
+[H1, V1] = meshgrid(h_jump:0.1:h_max, v_min:0.1:v_max+0.1);
+[H2, V2] = meshgrid(h_min:0.01:h_jump, v_min:0.01:v_max); % approximated mode 2 reagion
 
-state_points_1 = [[H1(:), V1(:)]; [H3(:), V3(:)]]; % mode 1
+state_points_1 = [H1(:), V1(:)]; % mode 1
 state_points_2 = [H2(:), V2(:)]; % mode 2, contact
 state_points = unique([state_points_1; state_points_2], 'rows');
+
 state_next_points = zeros(size(state_points));
 for i = 1:size(state_points, 1)
     state_next = bouncing_ball_dynamics(state_points(i, :)', 0);
