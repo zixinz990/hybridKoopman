@@ -1,7 +1,8 @@
 close all; clear;
+addpath("./data");
 
 has_state_in_obs = true;
-file_name = "2024_1_26_5_54_bouncing_ball_2_dim_DDE.mat";
+file_name = "./data/2024_1_29_0_6_bouncing_ball_2_dim_DDE.mat";
 
 syms h v real;
 x = [h; v];
@@ -12,7 +13,7 @@ g_list_fun = matlabFunction(g_list, 'Vars', {x}); % the input should be a col ve
 
 %% Test over points
 % calculate ground truth and prediction
-[H0, V0] = meshgrid(0:0.1:5, -2:0.1:2.5);
+[H0, V0] = meshgrid(0:0.01:1, -3:0.01:3);
 x0_list = [H0(:), V0(:)]; % mesh grid to points list, n_points x 2 matrix
 
 x_next_gt_list = zeros(size(x0_list));
@@ -41,27 +42,28 @@ pred_err = x_next_pred_list - x_next_gt_list;
 h_err = reshape(abs(pred_err(:, 1)), size(H0));
 v_err = reshape(abs(pred_err(:, 2)), size(H0));
 fprintf("n_obs: %d, eps: %d\n", size(g_list, 1), eps);
+% fprintf("n_obs: %d, eps_1: %d, eps_2: %d\n", size(g_list, 1), eps_1, eps_2);
 fprintf("Average h_err: %d. Min h_err: %d. Max h_err: %d\n", mean(h_err(:)), min(h_err(:)), max(h_err(:)))
 fprintf("Average v_err: %d. Min v_err: %d. Max v_err: %d\n\n", mean(v_err(:)), min(v_err(:)), max(v_err(:)))
 
 % plot
 figure(1);
 
-subplot(2, 1, 1);
+subplot(1, 2, 1);
 surf(H0, V0, h_err), axis equal, view(2);
 colorbar;
 xlabel("Height"), ylabel("Velocity");
 title("Error of Height Prediction (m)");
 
-subplot(2, 1, 2);
+subplot(1, 2, 2);
 surf(H0, V0, v_err), axis equal, view(2);
 colorbar;
 xlabel("Height"), ylabel("Velocity");
 title("Error of Velocity Prediction (m/s)");
 
 %% Test over trajectory
-x0 = [5; 0];
-sim_steps = 500;
+x0 = [0.3; 0];
+sim_steps = 50;
 
 % ground truth
 x_traj_gt = zeros(2, sim_steps + 1);
@@ -71,27 +73,27 @@ for i = 1:sim_steps
 end
 
 % prediction
-% x_traj_pred = zeros(2, sim_steps + 1);
-% x_traj_pred(:, 1) = x0;
-% for i = 1:sim_steps
-%     x_curr = x_traj_pred(:, i);
-%     g_curr = g_list_fun(x_curr);
-%     g_next_pred = A * g_curr;
-%     x_next_pred = g_next_pred(1:2);
-%     x_traj_pred(:, i+1) = x_next_pred;
-% end
+x_traj_pred = zeros(2, sim_steps + 1);
+x_traj_pred(:, 1) = x0;
+for i = 1:sim_steps
+    x_curr = x_traj_pred(:, i);
+    g_curr = g_list_fun(x_curr);
+    g_next_pred = A * g_curr;
+    x_next_pred = g_next_pred(1:2);
+    x_traj_pred(:, i+1) = x_next_pred;
+end
 
 % plot
 figure(2);
 
 subplot(2, 1, 1);
-plot((0:sim_steps) * 10, x_traj_gt(1, :), 'LineWidth', 2), axis tight, grid on, hold on;
-% plot((0:sim_steps) * 10, x_traj_pred(1, :), 'LineWidth', 2);
+plot((0:sim_steps) * 10, x_traj_gt(1, :), '-o', 'LineWidth', 4), axis tight, grid on, hold on;
+plot((0:sim_steps) * 10, x_traj_pred(1, :), '-o', 'LineWidth', 4);
 xlabel("Time (ms)"), ylabel("Height (m)")
 title("Height")
 
 subplot(2, 1, 2);
-plot((0:sim_steps) * 10, x_traj_gt(2, :), 'LineWidth', 2), axis tight, grid on, hold on;
-% plot((0:sim_steps) * 10, x_traj_pred(2, :), 'LineWidth', 2);
-xlabel("Time (ms)"), ylabel("Height (m/s)")
+plot((0:sim_steps) * 10, x_traj_gt(2, :), '-o', 'LineWidth', 4), axis tight, grid on, hold on;
+plot((0:sim_steps) * 10, x_traj_pred(2, :), '-o', 'LineWidth', 4);
+xlabel("Time (ms)"), ylabel("Velocity (m/s)")
 title("Velocity")
