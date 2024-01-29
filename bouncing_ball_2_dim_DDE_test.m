@@ -2,7 +2,7 @@ close all; clear;
 addpath("./data");
 
 has_state_in_obs = true;
-file_name = "./data/2024_1_29_0_6_bouncing_ball_2_dim_DDE.mat";
+file_name = "./data/2024_1_28_3_16_bouncing_ball_2_dim_DDE.mat";
 
 syms h v real;
 x = [h; v];
@@ -41,8 +41,8 @@ end
 pred_err = x_next_pred_list - x_next_gt_list;
 h_err = reshape(abs(pred_err(:, 1)), size(H0));
 v_err = reshape(abs(pred_err(:, 2)), size(H0));
-fprintf("n_obs: %d, eps: %d\n", size(g_list, 1), eps);
-% fprintf("n_obs: %d, eps_1: %d, eps_2: %d\n", size(g_list, 1), eps_1, eps_2);
+% fprintf("n_obs: %d, eps: %d\n", size(g_list, 1), eps);
+fprintf("n_obs: %d, eps_1: %d, eps_2: %d\n", size(g_list, 1), eps_1, eps_2);
 fprintf("Average h_err: %d. Min h_err: %d. Max h_err: %d\n", mean(h_err(:)), min(h_err(:)), max(h_err(:)))
 fprintf("Average v_err: %d. Min v_err: %d. Max v_err: %d\n\n", mean(v_err(:)), min(v_err(:)), max(v_err(:)))
 

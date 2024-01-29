@@ -46,7 +46,7 @@ for k = n_obs_1 + 1:n_obs
 end
 
 % figure(2);
-% plot(rbf_center_list(:, 1), rbf_center_list(:, 2), 'o'), axis equal, grid on;
+plot(rbf_center_list(:, 1), rbf_center_list(:, 2), 'o'), axis equal, grid on;
 
 g_list = [x; g_list]; % add state into observables
 n_obs = n_obs + 2;
