@@ -1,4 +1,4 @@
-function state_data = sampling_data_2_dim(x_range, sample_method, options)
+function state_data = sample_data_2_dim(x_range, sample_method, options)
 % This function is used to sample data in a set of states
 % Input:
 %   x_range:       n x 2 matrix. n is the dim of the state. The 1st col is t
