@@ -22,7 +22,7 @@ state_points = unique([state_points_1; state_points_2], 'rows');
 
 state_next_points = zeros(size(state_points));
 for i = 1:size(state_points, 1)
-    state_next = bouncing_ball_dynamics(state_points(i, :)', 0);
+    state_next = bouncing_ball_1_dim_discrete_time(state_points(i, :)', 0);
     state_next_points(i, :) = state_next';
 end
 state_DT = delaunayTriangulation(state_points);

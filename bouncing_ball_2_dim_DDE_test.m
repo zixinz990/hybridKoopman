@@ -25,7 +25,7 @@ for i = 1:size(x0_list, 1)
     g0 = g_list_fun(x0);
     
     % ground truth
-    x_next_gt = bouncing_ball_dynamics(x0, 0);
+    x_next_gt = bouncing_ball_1_dim_discrete_time(x0, 0);
     x_next_gt_list(i, :) = x_next_gt;
 
     % prediction
@@ -69,7 +69,7 @@ sim_steps = 50;
 x_traj_gt = zeros(2, sim_steps + 1);
 x_traj_gt(:, 1) = x0;
 for i = 1:sim_steps
-    x_traj_gt(:, i+1) = bouncing_ball_dynamics(x_traj_gt(:, i), 0);
+    x_traj_gt(:, i+1) = bouncing_ball_1_dim_discrete_time(x_traj_gt(:, i), 0);
 end
 
 % prediction
