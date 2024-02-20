@@ -1,10 +1,10 @@
-function run()
+function run(filename)
 addpath("./functions");
 addpath("./data");
-load("./pre_run_result.mat");
+load(filename);
 obs_fun_list = obs_fun_list;
-data_var_density = data_var_density;
-data_var_density_next = data_var_density_next;
+data = data;
+data_next = data_next;
 data_DT = data_DT;
 rbf_center_list = rbf_center_list;
 num_rbf = num_rbf;
@@ -16,7 +16,7 @@ R = zeros(num_obs, num_obs);
 for i = 1:num_obs
     parfor j = i:num_obs
         fprintf('Estimating R matrix: i = %d, j = %d\n', i, j);
-        result = est_inner_product(obs_fun_list{i}, obs_fun_list{j}, data_var_density, data_DT);
+        result = est_inner_product(obs_fun_list{i}, obs_fun_list{j}, data, data_DT);
         R(i, j) = result;
     end
 end
@@ -26,8 +26,11 @@ R = R + R' - tril(R);
 Q = zeros(num_obs, num_obs);
 for i = 1:num_obs
     parfor j = 1:num_obs
+        if j == 5
+            disp("")
+        end
         fprintf('Estimating Q matrix: i = %d, j = %d\n', i, j);
-        result = est_inner_product(obs_fun_list{i}, obs_fun_list{j}, data_var_density_next, data_DT);
+        result = est_inner_product(obs_fun_list{i}, obs_fun_list{j}, data_next, data_DT);
         Q(i, j) = result;
     end
 end

@@ -60,11 +60,21 @@ elseif sample_method == "var_density"
     data = var_density_sampling_bouncing_ball_2_dim(x_range, min_step_size, max_step_size);
 end
 
+% Remove all data that h = 0 and v <= 0
+bad_x_init_idx = data(:, 1) == 0 & data(:, 2) <= 0;
+data(bad_x_init_idx, :) = [];
+
+% Generate list of control input
+u_list = zeros(size(data, 1), 1);
+for i = 1:size(u_list, 1)
+    u_list(i, :) = 20 * rand - 10;
+end
+data = [data, u_list];
+
 % Calculate data_next
 data_next = zeros(size(data));
-parfor i = 1:size(data, 1)
-    u = 0;
-    x_next = dyn_fun(data(i, :)', u, g = g);
-    data_next(i, :) = x_next';
+for i = 1:size(data, 1)
+    x_next = dyn_fun(data(i, 1:2)', u_list(i, :), g = g);
+    data_next(i, :) = [x_next', u_list(i, :)];
 end
 end

@@ -5,7 +5,7 @@ num_steps = 100;
 dt = 0.01;
 m = 1;
 g = 10;
-x0 = [0; 1]; % [height; velocity]
+x0 = [1; 0]; % [height; velocity]
 dyn_fun = @bouncing_ball_2_dim_dyn;
 
 % Initialize trajectory
@@ -14,11 +14,7 @@ x_traj(:, 1) = x0;
 
 % Simulate
 for i = 1:num_steps
-    if i == 66
-        disp("")
-    end
-    x_traj(:, i+1) = dyn_fun(x_traj(:, i), 0, ...
-                             m = m, g = g, dt = dt);
+    x_traj(:, i+1) = dyn_fun(x_traj(:, i), 20, m = m, g = g, dt = dt);
 end
 
 % Plot

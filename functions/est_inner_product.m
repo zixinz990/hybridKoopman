@@ -14,13 +14,13 @@ for i = 1:N
     x3 = state_DT.Points(x3_idx, :);
     
     % Calculate the average value of vertices
-    G_avg = (g1_fun(state_next_points(x1_idx, :)') * conj(g2_fun(x1')) + ...
-             g1_fun(state_next_points(x2_idx, :)') * conj(g2_fun(x2')) + ...
-             g1_fun(state_next_points(x3_idx, :)') * conj(g2_fun(x3'))) / 3;
+    G_avg = (g1_fun(state_next_points(x1_idx, :)') * conj(g2_fun([x1'; state_next_points(x1_idx, 3)])) + ...
+             g1_fun(state_next_points(x2_idx, :)') * conj(g2_fun([x2'; state_next_points(x1_idx, 3)])) + ...
+             g1_fun(state_next_points(x3_idx, :)') * conj(g2_fun([x3'; state_next_points(x1_idx, 3)]))) / 3;
     
     % Calculate the area of the current triangle
     dv = cal_tri_area(x1, x2, x3);
-
+    
     % Sum
     result = result + G_avg * dv;
 end
