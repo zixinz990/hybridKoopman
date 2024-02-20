@@ -1,4 +1,6 @@
 function run()
+addpath("./functions");
+addpath("./data");
 load("./pre_run_result.mat");
 obs_fun_list = obs_fun_list;
 data_var_density = data_var_density;
