@@ -3,7 +3,7 @@ addpath("./data");
 addpath("./functions");
 
 has_state_in_obs = true;
-file_name = "./data/2024_2_19_10_24_bouncing_ball_2_dim_KDE.mat";
+file_name = "./data/2024_2_20_9_2_bouncing_ball_2_dim_KDE.mat";
 
 syms h v real;
 x = [h; v];
@@ -30,6 +30,60 @@ for i = 1:size(x0_list, 1)
 
     % prediction
     g_next_pred = A * g0;
+    if has_state_in_obs
+        x_next_pred = g_next_pred(end-1:end);
+    else
+        % todo
+    end
+    x_next_pred_list(i, :) = x_next_pred';
+end
+
+pred_err = x_next_pred_list - x_next_gt_list;
+h_err = reshape(abs(pred_err(:, 1)), size(H0));
+v_err = reshape(abs(pred_err(:, 2)), size(H0));
+fprintf("n_obs: %d, eps: %d\n", size(obs_fun_list, 1), eps);
+fprintf("Average h_err: %d. Min h_err: %d. Max h_err: %d\n", mean(h_err(:)), min(h_err(:)), max(h_err(:)))
+fprintf("Average v_err: %d. Min v_err: %d. Max v_err: %d\n\n", mean(v_err(:)), min(v_err(:)), max(v_err(:)))
+
+% plot
+figure(1);
+
+subplot(1, 2, 1);
+surf(H0, V0, h_err), axis equal, view(2);
+colorbar;
+xlabel("Height"), ylabel("Velocity");
+title("Error of Height Prediction (m)");
+
+subplot(1, 2, 2);
+surf(H0, V0, v_err), axis equal, view(2);
+colorbar;
+xlabel("Height"), ylabel("Velocity");
+title("Error of Velocity Prediction (m/s)");
+
+%% Test over points, but with control
+% Seperate A matrix
+A_new = A(1:end-1, 1:end-1);
+B_new = A(1:end-1, end);
+
+% calculate ground truth and prediction
+[H0, V0] = meshgrid(0:0.01:0.5125, -3.2016:0.01:3.2016);
+x0_list = [H0(:), V0(:)]; % mesh grid to points list, n_points x 2 matrix
+u0 = 5;
+
+x_next_gt_list = zeros(size(x0_list));
+x_next_pred_list = zeros(size(x0_list));
+
+for i = 1:size(x0_list, 1)
+    % initial state
+    x0 = x0_list(i, :)';
+    g0 = g_list_fun(x0, obs_fun_list(1:end-1)); % [rbf; x]
+    
+    % ground truth
+    x_next_gt = bouncing_ball_2_dim_dyn(x0, u0);
+    x_next_gt_list(i, :) = x_next_gt;
+
+    % prediction
+    g_next_pred = A_new * g0 + B_new * u0;
     if has_state_in_obs
         x_next_pred = g_next_pred(end-1:end);
     else
@@ -97,6 +151,61 @@ plot((0:sim_steps) * 10, x_traj_pred(2, :), '-o', 'LineWidth', 4);
 xlabel("Time (ms)"), ylabel("Velocity (m/s)")
 title("Velocity")
 
+%% Test LQR
+Q = eye(size(A_new, 2));
+R = 0.000001;
+N = 0;
+K_gain = dlqr(A_new, B_new, Q, R, N);
+
+Q_ = eye(2);
+A_ = [1, 0.01; 0, 1];
+B_ = [0.5 * 0.01^2; 0.01];
+K_gain_ = dlqr(A_, B_, Q_, R, N);
+
+%%
+figure(4);
+subplot(2, 1, 1);
+
+for k = 1:10
+    x0 = [rand * 0.5; rand * 0.2 - 0.2];
+    g0 = g_list_fun(x0, obs_fun_list(1:end-1)); % [rbf; x]
+    sim_steps = 1000;
+    
+    x_list = zeros(sim_steps+1, 2);
+    x_list_ = zeros(sim_steps+1, 2);
+    g_list = zeros(sim_steps+1, size(A_new, 2));
+    
+    x_list(1, :) = x0';
+    x_list_(1, :) = x0';
+    g_list(1, :) = g0';
+    
+    for i = 1:sim_steps
+        cur_x = x_list(i, :)';
+        cur_x_ = x_list_(i, :)';
+        cur_g = g_list(i, :)';
+    
+        u = -K_gain * cur_g;
+        u_ = -K_gain_ * cur_x_;
+        x_next = bouncing_ball_2_dim_dyn(cur_x, u);
+        x_next_ = A_ * cur_x_ + B_ * u_;
+        g_next = g_list_fun(x_next, obs_fun_list(1:end-1));
+    
+        x_list(i+1, :) = x_next';
+        x_list_(i+1, :) = x_next_';
+        g_list(i+1, :) = g_next';
+    end
+    plot((0:sim_steps) * 10, x_list(:, 1), '-o', 'LineWidth', 2), grid on, hold on;
+end
+
+% plot((0:sim_steps) * 10, x_list_(:, 1), '-o', 'LineWidth', 4), axis tight;
+xlabel("Time (ms)"), ylabel("Height (m)");
+title("LQR with lifted dynamics");
+subplot(2, 1, 2);
+plot((0:sim_steps) * 10, x_list(:, 2), '-o', 'LineWidth', 4), grid on, hold on;
+% plot((0:sim_steps) * 10, x_list_(:, 2), '-o', 'LineWidth', 4), axis tight;
+xlabel("Time (ms)"), ylabel("Velocity (m/s)");
+
+%%
 function g_value = g_list_fun(x, obs_fun_list)
 num_obs = size(obs_fun_list, 2);
 g_value = zeros(num_obs, 1);
