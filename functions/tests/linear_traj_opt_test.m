@@ -1,6 +1,7 @@
 close all; clear; clc;
 syms h v u real
 x = [h; v];
+dyn_fea_ref = false;
 
 % Set linear dynamics
 dt = 0.01;
@@ -18,19 +19,21 @@ Q = diag([10, 1]);
 Q_terminal = 100 * diag([10, 1]);
 R = 0.000001;
 
-% Generate a dynamical feasible random reference state trajectory
-% X_ref = zeros(size(x0, 1), N);
-% X_ref(:, 1) = x0;
-% for k = 1:N - 1
-%     xk = X_ref(:, k);
-%     uk = rand * (u_max - u_min) + u_min;
-%     X_ref(:, k+1) = A * xk + B * uk + C;
-% end
-
-% Generate a dynamical infeasible reference state trajectory
+% Reference state trajectory
 X_ref = zeros(size(x0, 1), N);
-for k = 1:N
-    X_ref(:, k) = [8; 1];
+if dyn_fea_ref
+    % Generate a dynamical feasible random reference state trajectory
+    X_ref(:, 1) = x0;
+    for k = 1:N - 1
+        xk = X_ref(:, k);
+        uk = rand * (u_max - u_min) + u_min;
+        X_ref(:, k+1) = A * xk + B * uk + C;
+    end
+else
+    % Generate a dynamical infeasible reference state trajectory    
+    for k = 1:N
+        X_ref(:, k) = [8; 1];
+    end
 end
 
 % Initial guess
