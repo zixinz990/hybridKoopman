@@ -67,7 +67,7 @@ data(bad_x_init_idx, :) = [];
 % Generate list of control input
 u_list = zeros(size(data, 1), 1);
 for i = 1:size(u_list, 1)
-    u_list(i, :) = 20 * rand - 10;
+    u_list(i, :) = 30 * rand - 10;
 end
 data = [data, u_list];
 

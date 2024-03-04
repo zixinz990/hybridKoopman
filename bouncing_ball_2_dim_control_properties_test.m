@@ -2,8 +2,8 @@ close all; clear; clc;
 addpath("./data");
 addpath(genpath("./functions"));
 
-% load mat file
-file_name = "./data/2024_2_20_9_2_bouncing_ball_2_dim_KDE.mat";
+% Load mat file
+file_name = "./data/2024_2_23_7_7_bouncing_ball_2_dim_KDE.mat";
 load(file_name);
 
 % Get linear system: g_next = A_lift * g + B_lift * u

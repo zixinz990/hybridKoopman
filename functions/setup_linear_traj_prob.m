@@ -44,7 +44,7 @@ end
 % Running quadratic cost
 cost = optimexpr(1);
 for i = 1:N - 1
-    cost = cost + (X(:, i) - X_ref(:, i))' * Q * (X(:, i) - X_ref(:, i)) + U(i)' * R * U(i);
+    cost = cost + 0.5 * (X(:, i) - X_ref(:, i))' * Q * (X(:, i) - X_ref(:, i)) + 0.5 * U(i)' * R * U(i);
 end
 
 % Terminal quadratic cost

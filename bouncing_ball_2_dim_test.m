@@ -65,6 +65,7 @@ title("Error of Velocity Prediction (m/s)");
 A_new = A(1:end-1, 1:end-1);
 B_new = A(1:end-1, end);
 
+%%
 % calculate ground truth and prediction
 [H0, V0] = meshgrid(0:0.01:0.5125, -3.2016:0.01:3.2016);
 x0_list = [H0(:), V0(:)]; % mesh grid to points list, n_points x 2 matrix

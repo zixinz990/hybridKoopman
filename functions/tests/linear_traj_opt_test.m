@@ -11,12 +11,12 @@ C = -[0.5*10*dt^2; 10*dt];
 dyn_fun = matlabFunction(A*x + B*u + C, "Vars", {x, u});
 
 % Set parameters
-N = 100;
-x0 = [10; 0];
+N = 30;
+x0 = [0.5; 0];
 u_min = -50;
 u_max = 50;
-Q = diag([10, 1]);
-Q_terminal = 100 * diag([10, 1]);
+Q = diag([20, 1]);
+Q_terminal = Q;
 R = 0.000001;
 
 % Reference state trajectory
@@ -32,7 +32,7 @@ if dyn_fea_ref
 else
     % Generate a dynamical infeasible reference state trajectory    
     for k = 1:N
-        X_ref(:, k) = [8; 1];
+        X_ref(:, k) = [0.1; 0];
     end
 end
 
