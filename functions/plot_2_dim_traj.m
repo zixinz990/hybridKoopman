@@ -1,4 +1,4 @@
-function plot_2_dim_traj(X_ref, x0, U, dyn_fun)
+function X = plot_2_dim_traj(X_ref, x0, U, dyn_fun)
 % This function is used to plot a trajectory given the initial state, input
 % trajectory and dynamics, and compare the result with a reference
 arguments
