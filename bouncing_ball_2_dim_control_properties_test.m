@@ -3,13 +3,17 @@ addpath("./data");
 addpath(genpath("./functions"));
 
 % Load mat file
-file_name = "./data/2024_2_23_7_7_bouncing_ball_2_dim_KDE.mat";
+file_name = "./data/2024_2_20_9_2_bouncing_ball_2_dim_KDE.mat";
 load(file_name);
 
 % Get linear system: g_next = A_lift * g + B_lift * u
 % The observables [g; u] = [rbf; x; u]
 A_lift = A(1:end-1, 1:end-1);
 B_lift = A(1:end-1, end);
+
+% TEST: COMPOSE OPERATORS
+A_lift = [A_lift, zeros(size(A_lift)); zeros(size(A_lift)), A_lift];
+B_lift = [B_lift, zeros(size(B_lift)); zeros(size(B_lift)), B_lift];
 
 % Calculate eigenvalues of A_list
 A_lift_eigs = eig(A_lift);
@@ -24,7 +28,7 @@ fplot(@(t) sin(t), @(t) cos(t), 'LineWidth', 2);
 grid on, axis equal;
 title("Eigenvalues of the Lifted Discrete-time Dynamics", 'FontSize', 20);
 
-% Controllability test of lifted dynamics
+%% Controllability test of lifted dynamics
 num_lift_states = size(B_lift, 1);
 C_lift = zeros(size(B_lift, 1), size(B_lift, 2) * num_lift_states);
 for n = 1:num_lift_states
@@ -33,7 +37,7 @@ end
 fprintf("Number of lifted states: %d\n", num_lift_states);
 fprintf("Rank of C_lift: %d\n\n", rank(C_lift));
 
-% Set original dynamics
+%% Set original dynamics
 A = [1, 0.01; 0, 1];
 B = [0.5 * 0.01^2; 0.01];
 

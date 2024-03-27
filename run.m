@@ -4,10 +4,18 @@ dyn_fun = @bouncing_ball_2_dim_dyn;
 sample_method = "uniform";
 uniform_step_size = [0.015; 0.015];
 % In the data matrix, each row is [x1, x2, u]
-[data, data_extended, data_next] = gen_data(dyn_fun, sample_method, ...
+% Extend the bound to make more observables cover the boundaries
+h_lb_extend = 0.2;
+h_ub_extend = 0.2;
+v_lb_extend = 0.2;
+v_ub_extend = 0.2;
+[data, data_extended, data_next, x_range] = gen_data(dyn_fun, sample_method, ...
                                             uniform_step_size=uniform_step_size, ...
-                                            u_min=u_min, u_max=u_max);
+                                            u_min=u_min, u_max=u_max, ...
+                                            h_lb_extend=h_lb_extend, h_ub_extend=h_ub_extend, ...
+                                            v_lb_extend=v_lb_extend, v_ub_extend=v_ub_extend);
 fprintf("Number of data: %d\n", size(data, 1));
+x_range_extend = x_range + [-h_lb_extend, h_ub_extend; -v_lb_extend, v_ub_extend];
 
 %% Delaunay triangulation
 data_DT = delaunayTriangulation(data(:, 1:2));
@@ -61,7 +69,7 @@ time_arr = time_arr(1:end-2);
 file_name = "./data/" + strjoin(time_arr, '') + "bouncing_ball_2_dim_KDE.mat";
 save(file_name, "R", "Q", "A", ...
                 "num_rbf", "eps", "u_min", "u_max", "sample_method", "uniform_step_size", ...
-                "rbf_centers", "obs_dim", "obs_fun_cell");
+                "rbf_centers", "obs_dim", "obs_fun_cell", "x_range_extend");
 
 %% Plot
 % figure(1);
@@ -99,5 +107,14 @@ save(file_name, "R", "Q", "A", ...
 % title("Center of Observables with 20% radius", "FontSize", 24);
 % ylim([-4, 4]);
 % axis equal; grid on;
+% 
+% % left bound of sample area
+% plot([x_range(1, 1), x_range(1, 1)], [x_range(2, 1), x_range(2, 2)], 'LineWidth', 2, 'Color', 'black');
+% % right bound of sample area
+% plot([x_range(1, 2), x_range(1, 2)], [x_range(2, 1), x_range(2, 2)], 'LineWidth', 2, 'Color', 'black');
+% % upper bound of sample area
+% plot([x_range(1, 1), x_range(1, 2)], [x_range(2, 2), x_range(2, 2)], 'LineWidth', 2, 'Color', 'black');
+% % lower bound of sample area
+% plot([x_range(1, 1), x_range(1, 2)], [x_range(2, 1), x_range(2, 1)], 'LineWidth', 2, 'Color', 'black');
 
 end
