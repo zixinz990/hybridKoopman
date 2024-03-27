@@ -72,49 +72,49 @@ save(file_name, "R", "Q", "A", ...
                 "rbf_centers", "obs_dim", "obs_fun_cell", "x_range_extend");
 
 %% Plot
-% figure(1);
-% 
-% subplot(1, 4, 1);
-% plot(data(:, 1), data(:, 2), '.');
-% xlabel("Height (m)", 'FontSize', 16);
-% ylabel("Velocity (m/s)", "FontSize", 16);
-% ylim([-4, 4]);
-% title("Uniform Sampling", "FontSize", 24);
-% axis equal, grid on;
-% 
-% subplot(1, 4, 2);
-% plot(data_next(:, 1), data_next(:, 2), '.');
-% xlabel("Height (m)", 'FontSize', 16);
-% ylabel("Velocity (m/s)", "FontSize", 16);
-% title("Uniform Sampling (next)", "FontSize", 24);
-% ylim([-4, 4]);
-% axis equal, grid on;
-% 
-% subplot(1, 4, 3);
-% triplot(data_DT);
-% ylim([-4, 4]);
-% axis equal, grid on;
-% 
-% subplot(1, 4, 4);
-% rbf_08_radius = sqrt(-log(0.2) / eps^2); % radius of 20%
-% hold on;
-% for i = 1:num_rbf
-%     ci = rbf_centers(i, :);
-%     draw_circle(ci(1), ci(2), rbf_08_radius);
-% end
-% xlabel("Height (m)", 'FontSize', 16);
-% ylabel("Velocity (m/s)", "FontSize", 16);
-% title("Center of Observables with 20% radius", "FontSize", 24);
-% ylim([-4, 4]);
-% axis equal; grid on;
-% 
-% % left bound of sample area
-% plot([x_range(1, 1), x_range(1, 1)], [x_range(2, 1), x_range(2, 2)], 'LineWidth', 2, 'Color', 'black');
-% % right bound of sample area
-% plot([x_range(1, 2), x_range(1, 2)], [x_range(2, 1), x_range(2, 2)], 'LineWidth', 2, 'Color', 'black');
-% % upper bound of sample area
-% plot([x_range(1, 1), x_range(1, 2)], [x_range(2, 2), x_range(2, 2)], 'LineWidth', 2, 'Color', 'black');
-% % lower bound of sample area
-% plot([x_range(1, 1), x_range(1, 2)], [x_range(2, 1), x_range(2, 1)], 'LineWidth', 2, 'Color', 'black');
+figure(1);
+
+subplot(1, 4, 1);
+plot(data(:, 1), data(:, 2), '.');
+xlabel("Height (m)", 'FontSize', 16);
+ylabel("Velocity (m/s)", "FontSize", 16);
+ylim([-4, 4]);
+title("Uniform Sampling", "FontSize", 24);
+axis equal, grid on;
+
+subplot(1, 4, 2);
+plot(data_next(:, 1), data_next(:, 2), '.');
+xlabel("Height (m)", 'FontSize', 16);
+ylabel("Velocity (m/s)", "FontSize", 16);
+title("Uniform Sampling (next)", "FontSize", 24);
+ylim([-4, 4]);
+axis equal, grid on;
+
+subplot(1, 4, 3);
+triplot(data_DT);
+ylim([-4, 4]);
+axis equal, grid on;
+
+subplot(1, 4, 4);
+rbf_08_radius = sqrt(-log(0.2) / eps^2); % radius of 20%
+hold on;
+for i = 1:num_rbf
+    ci = rbf_centers(i, :);
+    draw_circle(ci(1), ci(2), rbf_08_radius);
+end
+xlabel("Height (m)", 'FontSize', 16);
+ylabel("Velocity (m/s)", "FontSize", 16);
+title("Center of Observables with 20% radius", "FontSize", 24);
+ylim([-4, 4]);
+axis equal; grid on;
+
+% left bound of sample area
+plot([x_range(1, 1), x_range(1, 1)], [x_range(2, 1), x_range(2, 2)], 'LineWidth', 2, 'Color', 'black');
+% right bound of sample area
+plot([x_range(1, 2), x_range(1, 2)], [x_range(2, 1), x_range(2, 2)], 'LineWidth', 2, 'Color', 'black');
+% upper bound of sample area
+plot([x_range(1, 1), x_range(1, 2)], [x_range(2, 2), x_range(2, 2)], 'LineWidth', 2, 'Color', 'black');
+% lower bound of sample area
+plot([x_range(1, 1), x_range(1, 2)], [x_range(2, 1), x_range(2, 1)], 'LineWidth', 2, 'Color', 'black');
 
 end

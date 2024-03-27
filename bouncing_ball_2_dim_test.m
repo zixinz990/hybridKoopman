@@ -3,7 +3,7 @@ addpath("./data");
 addpath("./functions");
 
 has_state_in_obs = true;
-file_name = "./data/2024_2_20_9_2_bouncing_ball_2_dim_KDE.mat";
+file_name = "./data/2024_3_27_12_29_bouncing_ball_2_dim_KDE.mat";
 
 syms h v real;
 x = [h; v];
@@ -22,7 +22,7 @@ x_next_pred_list = zeros(size(x0_list));
 for i = 1:size(x0_list, 1)
     % initial state
     x0 = x0_list(i, :)';
-    g0 = g_list_fun(x0, obs_fun_list);
+    g0 = g_list_fun(x0, obs_fun_cell(1:end-1)); % obs_fun_cell = [RBFs; x; u]
     
     % ground truth
     x_next_gt = bouncing_ball_2_dim_dyn(x0, 0);
@@ -41,7 +41,7 @@ end
 pred_err = x_next_pred_list - x_next_gt_list;
 h_err = reshape(abs(pred_err(:, 1)), size(H0));
 v_err = reshape(abs(pred_err(:, 2)), size(H0));
-fprintf("n_obs: %d, eps: %d\n", size(obs_fun_list, 1), eps);
+fprintf("n_obs: %d, eps: %d\n", size(obs_fun_cell, 1), eps);
 fprintf("Average h_err: %d. Min h_err: %d. Max h_err: %d\n", mean(h_err(:)), min(h_err(:)), max(h_err(:)))
 fprintf("Average v_err: %d. Min v_err: %d. Max v_err: %d\n\n", mean(v_err(:)), min(v_err(:)), max(v_err(:)))
 
@@ -77,7 +77,7 @@ x_next_pred_list = zeros(size(x0_list));
 for i = 1:size(x0_list, 1)
     % initial state
     x0 = x0_list(i, :)';
-    g0 = g_list_fun(x0, obs_fun_list(1:end-1)); % [rbf; x]
+    g0 = g_list_fun(x0, obs_fun_cell(1:end-1)); % [rbf; x]
     
     % ground truth
     x_next_gt = bouncing_ball_2_dim_dyn(x0, u0);
@@ -96,7 +96,7 @@ end
 pred_err = x_next_pred_list - x_next_gt_list;
 h_err = reshape(abs(pred_err(:, 1)), size(H0));
 v_err = reshape(abs(pred_err(:, 2)), size(H0));
-fprintf("n_obs: %d, eps: %d\n", size(obs_fun_list, 1), eps);
+fprintf("n_obs: %d, eps: %d\n", size(obs_fun_cell, 1), eps);
 fprintf("Average h_err: %d. Min h_err: %d. Max h_err: %d\n", mean(h_err(:)), min(h_err(:)), max(h_err(:)))
 fprintf("Average v_err: %d. Min v_err: %d. Max v_err: %d\n\n", mean(v_err(:)), min(v_err(:)), max(v_err(:)))
 
@@ -131,7 +131,7 @@ x_traj_pred = zeros(2, sim_steps + 1);
 x_traj_pred(:, 1) = x0;
 for i = 1:sim_steps
     x_curr = x_traj_pred(:, i);
-    g_curr = g_list_fun(x_curr, obs_fun_list);
+    g_curr = g_list_fun(x_curr, obs_fun_cell);
     g_next_pred = A * g_curr;
     x_next_pred = g_next_pred(end-1:end);
     x_traj_pred(:, i+1) = x_next_pred;
@@ -169,7 +169,7 @@ subplot(2, 1, 1);
 
 for k = 1:10
     x0 = [rand * 0.5; rand * 0.2 - 0.2];
-    g0 = g_list_fun(x0, obs_fun_list(1:end-1)); % [rbf; x]
+    g0 = g_list_fun(x0, obs_fun_cell(1:end-1)); % [rbf; x]
     sim_steps = 1000;
     
     x_list = zeros(sim_steps+1, 2);
@@ -189,7 +189,7 @@ for k = 1:10
         u_ = -K_gain_ * cur_x_;
         x_next = bouncing_ball_2_dim_dyn(cur_x, u);
         x_next_ = A_ * cur_x_ + B_ * u_;
-        g_next = g_list_fun(x_next, obs_fun_list(1:end-1));
+        g_next = g_list_fun(x_next, obs_fun_cell(1:end-1));
     
         x_list(i+1, :) = x_next';
         x_list_(i+1, :) = x_next_';
@@ -207,10 +207,10 @@ plot((0:sim_steps) * 10, x_list(:, 2), '-o', 'LineWidth', 4), grid on, hold on;
 xlabel("Time (ms)"), ylabel("Velocity (m/s)");
 
 %%
-function g_value = g_list_fun(x, obs_fun_list)
-num_obs = size(obs_fun_list, 2);
+function g_value = g_list_fun(x, obs_fun_cell)
+num_obs = size(obs_fun_cell, 2);
 g_value = zeros(num_obs, 1);
 for i = 1:num_obs
-    g_value(i) = obs_fun_list{i}(x);
+    g_value(i) = obs_fun_cell{i}(x);
 end
 end
