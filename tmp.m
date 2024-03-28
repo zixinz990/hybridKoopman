@@ -1,5 +1,7 @@
 clear;
 clc;
+addpath(genpath("./functions"));
+addpath("./data");
 
 %% Sample data
 u_min = -10;
@@ -33,8 +35,8 @@ x = [x1; x2];
 
 eps = 1;
 
-c1 = [0.1; 0.1]; % center 1
-c2 = [0.1; 0.1]; % center 2
+c1 = [0.5; 0.5]; % center 1
+c2 = [0.5; 0.5]; % center 2
 
 g1 = exp(-eps^2*(x - c1)'*(x - c1));
 g2 = exp(-eps^2*(x - c2)'*(x - c2));
@@ -49,5 +51,5 @@ toc
 g1_fun = matlabFunction(g1, 'Vars', {x});
 g2_fun = matlabFunction(g2, 'Vars', {x});
 tic
-inner_product_est = est_inner_product(g1_fun, g2_fun, data, data_DT);
+inner_product_est = est_inner_product(g1_fun, g2_fun, data, data_DT)
 toc
